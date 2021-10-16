@@ -16,6 +16,22 @@ custom:
 plugins:
   - serverless-iam-roles-per-function
 
+functions:
+  createCertificate:
+    handler: src/api.createCertificate
+    name: create-certificate
+    memorySize: 128
+    timeout: 5
+    events:
+      - http:
+          path: certificate
+          method: post
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "dynamodb:PutItem"
+        Resource: !GetAtt CertificatesTable.Arn
+
 resources:
   Resources:
     CertificatesTable:
