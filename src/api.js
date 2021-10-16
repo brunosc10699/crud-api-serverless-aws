@@ -4,6 +4,7 @@ const { marshall, unmarshall } = require("@aws-sdk/util-dynamodb");
 
 const { 
     PutItemCommand,
+    ScanCommand,
     GetItemCommand,
     UpdateItemCommand,
     DeleteItemCommand,
@@ -35,6 +36,36 @@ const createCertificate = async (event) => {
             errorMsg: error.message,
             errorStack: error.stack,
         });
+    }
+    return response;
+}
+
+const getAllCertificates = async (event) => {
+    
+    const response = { statusCode: 200 };
+
+    try {
+         const { Items } = await db.send(new ScanCommand({ TableName: process.env.DYNAMODB_TABLE_NAME }));
+
+        if (Items == []) {
+            response.body = JSON.stringify({
+                message: "There is no course certificate!",
+            });            
+        } else {
+            response.body = JSON.stringify({
+                message: "All certificates retrieved successfully!",
+                data: Items.map((item) => unmarshall(item)),
+                Items,
+            });
+        }
+    } catch (error) {
+         console.error(error);
+         response.statusCode = 500;
+         response.body = JSON.stringify({
+              message: "Failed to get all certificates!",
+              errorMsg: error.message,
+              errorStack: error.stack,
+         });
     }
     return response;
 }
@@ -144,6 +175,7 @@ const deleteCertificate = async (event) => {
 
 module.exports = {
     createCertificate,
+    getAllCertificates,
     getCertificate,
     updateCertificate,
     deleteCertificate,
