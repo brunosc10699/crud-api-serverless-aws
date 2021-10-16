@@ -59,6 +59,20 @@ functions:
         Action:
           - "dynamodb:UpdateItem"
         Resource: !GetAtt CertificatesTable.Arn
+  deleteCertificate:
+    handler: src/api.deleteCertificate
+    name: delete-certificate
+    memorySize: 128
+    timeout: 5
+    events:
+      - http:
+          path: certificate/{id}
+          method: delete
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "dynamodb:DeleteItem"
+        Resource: !GetAtt CertificatesTable.Arn
 
 resources:
   Resources:

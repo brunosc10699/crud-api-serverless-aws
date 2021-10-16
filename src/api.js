@@ -6,6 +6,7 @@ const {
     PutItemCommand,
     GetItemCommand,
     UpdateItemCommand,
+    DeleteItemCommand,
 } = require("@aws-sdk/client-dynamodb");
 
 const createCertificate = async (event) => {
@@ -113,8 +114,37 @@ const updateCertificate = async (event) => {
     return response;
 }
 
+const deleteCertificate = async (event) => {
+
+    const response = { statusCode: 204 };
+
+    try {
+         const params  = {
+              TableName: process.env.DYNAMODB_TABLE_NAME,
+              Key: marshall({ id: event.pathParameters.id }),            
+         }
+
+         const deleteResult = await db.send(new DeleteItemCommand(params));
+
+         response.body = JSON.stringify({
+              message: "Course certificate deleted successfully!",
+              deleteResult,
+         });
+    } catch (error) {
+         console.error(error);
+         response.statusCode = 500;
+         response.body = JSON.stringify({
+              message: "Failed to delete the course certificate: " + event.pathParameters.id,
+              errorMsg: error.message,
+              errorStack: error.stack,
+         });
+    }
+    return response;
+}
+
 module.exports = {
     createCertificate,
     getCertificate,
     updateCertificate,
+    deleteCertificate,
 }
