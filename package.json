@@ -1,0 +1,35 @@
+{
+  "name": "dio-course-certificate",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brunosc10699/crud-api-serverless-aws.git"
+  },
+  "keywords": [
+    "aws",
+    "dynamodb",
+    "cognito",
+    "api",
+    "gateway",
+    "lambda",
+    "github",
+    "actions",
+    "ci/cd"
+  ],
+  "author": "Leonardo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/brunosc10699/crud-api-serverless-aws/issues"
+  },
+  "homepage": "https://github.com/brunosc10699/crud-api-serverless-aws#readme",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.36.1",
+    "@aws-sdk/util-dynamodb": "^3.36.1",
+    "serverless-iam-roles-per-function": "^3.2.0"
+  }
+}
