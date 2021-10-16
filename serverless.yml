@@ -1,0 +1,31 @@
+service: dio-course-certificate
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  lambdaHashingVersion: '20201221'
+  stage: dev
+  region: us-east-1
+  environment:
+    DYNAMODB_TABLE_NAME: ${self:custom.certificatesTableName}
+
+custom:
+  certificatesTableName: course-certificate-table-${self:provider.stage}
+
+plugins:
+  - serverless-iam-roles-per-function
+
+resources:
+  Resources:
+    CertificatesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.certificatesTableName}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
