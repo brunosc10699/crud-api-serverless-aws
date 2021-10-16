@@ -5,6 +5,7 @@ const { marshall, unmarshall } = require("@aws-sdk/util-dynamodb");
 const { 
     PutItemCommand,
     GetItemCommand,
+    UpdateItemCommand,
 } = require("@aws-sdk/client-dynamodb");
 
 const createCertificate = async (event) => {
@@ -73,7 +74,47 @@ const getCertificate = async (event) => {
     return response;
 }
 
+const updateCertificate = async (event) => {
+
+    const response = { statusCode: 200 };
+
+    try {
+         const body = JSON.parse(event.body);
+         const objKeys = Object.keys(body);
+         const params = {
+              TableName: process.env.DYNAMODB_TABLE_NAME,
+              Key: marshall({ id: event.pathParameters.id }),
+              UpdateExpression: `SET ${objKeys.map((_, index) => `#key${index} = :value${index}`).join(", ")}`,
+              ExpressionAttributeNames: objKeys.reduce((acc, key, index) => ({
+                  ...acc,
+                  [`#key${index}`]: key,
+              }), { }),
+              ExpressionAttributeValues: marshall(objKeys.reduce((acc, key, index) => ({
+                  ...acc,
+                  [`:value${index}`]: body[key],
+              }), { })),
+         }
+
+         const updateResult = await db.send(new UpdateItemCommand(params));
+
+         response.body = JSON.stringify({
+              message: "Course certificate updated successfully!",
+              updateResult
+         })
+    } catch (error) {
+         console.error(error);
+         response.statusCode = 500;
+         response.body = JSON.stringify({
+              message: "Failed to update the certificate by this credential: " + event.pathParameters.id,
+              errorMsg: error.message,
+              errorStack: error.stack,
+         });
+    }
+    return response;
+}
+
 module.exports = {
     createCertificate,
     getCertificate,
+    updateCertificate,
 }

@@ -45,6 +45,20 @@ functions:
         Action:
           - "dynamodb:GetItem"
         Resource: !GetAtt CertificatesTable.Arn
+  updateCertificate:
+    handler: src/api.updateCertificate
+    name: update-certificate
+    memorySize: 128
+    timeout: 5
+    events:
+      - http:
+          path: certificate/{id}
+          method: put
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "dynamodb:UpdateItem"
+        Resource: !GetAtt CertificatesTable.Arn
 
 resources:
   Resources:
